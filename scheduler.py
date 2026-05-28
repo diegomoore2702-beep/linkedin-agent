@@ -23,15 +23,29 @@ def publicar_automatico(config_path: str):
 
         post = generar_post(config, tendencias)
 
+        print("\n" + "="*50)
+        print(post)
+        print("="*50 + "\n")
+
+        # Aprobación por Telegram si está configurado
+        if config.get("telegram_token") and config.get("telegram_chat_id"):
+            from telegram_approval import enviar_y_esperar_aprobacion
+            post = enviar_y_esperar_aprobacion(
+                config["telegram_token"],
+                config["telegram_chat_id"],
+                post
+            )
+            if not post:
+                logging.info("Post descartado por el usuario.")
+                return
+
+        # Guardar post
         output = Path("posts") / f"{config['nombre'].replace(' ', '_')}_{datetime.now().strftime('%Y-%m-%d')}.txt"
         output.parent.mkdir(exist_ok=True)
         output.write_text(post)
         logging.info(f"Post guardado en: {output}")
 
-        print("\n" + "="*50)
-        print(post)
-        print("="*50 + "\n")
-
+        # Publicar en LinkedIn
         if config.get("linkedin_email") and config.get("linkedin_password"):
             publicar_en_linkedin(config["linkedin_email"], config["linkedin_password"], post)
             logging.info("Post publicado en LinkedIn.")

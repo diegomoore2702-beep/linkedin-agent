@@ -1,11 +1,13 @@
 {
-  "nombre": "Juan Pérez",
-  "industria": "tecnología",
-  "tono": "profesional pero cercano, usa datos concretos, sin frases de relleno",
-  "temas_clave": ["IA", "startups", "liderazgo", "productividad"],
+  "nombre": "Tu Nombre",
+  "industria": "tu industria (ej: marketing, finanzas, tecnología)",
+  "tono": "cómo quieres sonar (ej: profesional pero cercano, directo, con humor)",
+  "temas_clave": ["tema1", "tema2", "tema3"],
   "idioma": "español",
   "hora_publicacion": "08:00",
   "posts_por_semana": 5,
   "linkedin_email": "",
-  "linkedin_password": ""
+  "linkedin_password": "",
+  "telegram_token": "",
+  "telegram_chat_id": ""
 }
