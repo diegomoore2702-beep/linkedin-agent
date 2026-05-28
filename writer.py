@@ -1,14 +1,25 @@
 import anthropic
-import json
+import sys
+sys.path.insert(0, ".")
+from memory.memory import obtener_contexto
 
 client = anthropic.Anthropic()
 
 def generar_post(config: dict, tendencias: list[str]) -> str:
     tendencias_str = "\n".join(f"- {t}" for t in tendencias)
+    contexto_memoria = obtener_contexto(config["nombre"])
+
+    seccion_memoria = ""
+    if contexto_memoria:
+        seccion_memoria = f"""
+MEMORIA ACUMULADA DEL CLIENTE (usa esto para sonar exactamente como él/ella):
+{contexto_memoria}
+
+"""
 
     prompt = f"""Eres el ghostwriter de LinkedIn de {config['nombre']}.
-
-Perfil del cliente:
+{seccion_memoria}
+Perfil base del cliente:
 - Industria: {config['industria']}
 - Tono: {config['tono']}
 - Temas clave: {', '.join(config['temas_clave'])}
@@ -24,7 +35,8 @@ Escribe UN post de LinkedIn que:
 - Use saltos de línea para que sea fácil de leer
 - Termine con una pregunta que invite a comentar
 - NO use hashtags genéricos ni frases de relleno como "En el mundo actual..."
-- Suene exactamente como {config['nombre']} — humano, directo, con criterio propio
+- Si hay memoria acumulada, suene EXACTAMENTE como {config['nombre']} — mismas frases, mismo ritmo, misma forma de abrir y cerrar
+- Si no hay memoria aún, suene humano, directo, con criterio propio
 
 Solo escribe el post, sin explicaciones ni títulos."""
 

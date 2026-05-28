@@ -7,6 +7,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from trends import get_trends
 from writer import generar_post
 from publisher import publicar_en_linkedin
+from memory.memory import registrar_post
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
 
@@ -36,6 +37,9 @@ def publicar_automatico(config_path: str):
             logging.info("Post publicado en LinkedIn.")
         else:
             logging.warning("Sin credenciales — post guardado pero no publicado.")
+
+        registrar_post(config["nombre"], post)
+        logging.info("Post guardado en memoria del cliente.")
 
     except Exception as e:
         logging.error(f"Error: {e}")
