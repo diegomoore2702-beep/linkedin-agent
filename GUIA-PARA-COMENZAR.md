@@ -1,18 +1,30 @@
 # Guía: Automatiza tus posts de LinkedIn con IA
 
 **Tiempo estimado:** 20-30 minutos  
-**Lo que necesitas:** VS Code, Python, $5 en créditos de Anthropic
+**Lo que necesitas:** VS Code instalado, $5 en créditos de Anthropic
+
+Abre la terminal en VS Code con `Ctrl + J` (Windows) o `Cmd + J` (Mac) y sigue los pasos.
 
 ---
 
 ## Paso 1 — Instalar Python
 
-Ve a [python.org/downloads](https://www.python.org/downloads) y descarga la versión más reciente.
-
-Durante la instalación, **marca la casilla "Add Python to PATH"** — es importante.
-
-Para verificar que quedó bien, abre la terminal en VS Code (`Ctrl + J` o `Cmd + J`) y escribe:
+**Mac:**
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+Cuando termine:
+```bash
+brew install python
+```
+
+**Windows (PowerShell como administrador):**
+```powershell
+winget install Python.Python.3.12
+```
+
+Verifica que quedó bien:
+```bash
 python --version
 ```
 Debe mostrarte algo como `Python 3.12.x`.
@@ -21,25 +33,23 @@ Debe mostrarte algo como `Python 3.12.x`.
 
 ## Paso 2 — Obtener tu API Key de Anthropic
 
-1. Ve a [console.anthropic.com](https://console.anthropic.com)
-2. Crea una cuenta (o entra si ya tienes)
-3. Ve a **Plans & Billing** y carga $5
-4. Ve a **API Keys** → **Create Key**
-5. Copia la key — empieza con `sk-ant-...`
+1. Ve a [console.anthropic.com](https://console.anthropic.com) y crea una cuenta
+2. Ve a **Plans & Billing** y carga $5
+3. Ve a **API Keys** → **Create Key**
+4. Copia la key — empieza con `sk-ant-...`
 
 ---
 
 ## Paso 3 — Descargar el agente
 
-Descarga o clona esta carpeta en tu computador. Si no sabes cómo clonar, descarga el ZIP desde GitHub y descomprímelo.
-
-En VS Code, abre la carpeta del proyecto: **File → Open Folder**.
+```bash
+git clone https://github.com/diegomoore2702-beep/linkedin-agent.git
+cd linkedin-agent
+```
 
 ---
 
 ## Paso 4 — Guardar tu API Key
-
-En la terminal de VS Code, escribe según tu sistema:
 
 **Mac:**
 ```bash
@@ -51,13 +61,11 @@ source ~/.zprofile
 ```powershell
 setx ANTHROPIC_API_KEY "sk-ant-PEGA-TU-KEY-AQUI"
 ```
-Cierra y vuelve a abrir VS Code después de esto.
+Cierra y vuelve a abrir la terminal después de esto.
 
 ---
 
 ## Paso 5 — Instalar las dependencias
-
-En la terminal de VS Code:
 
 ```bash
 pip install anthropic feedparser apscheduler python-dotenv playwright
@@ -70,7 +78,19 @@ Esto puede tardar 2-3 minutos.
 
 ## Paso 6 — Configurar tu perfil
 
-Abre el archivo `config/ejemplo_cliente.json` y edítalo con tu información:
+Abre el archivo de configuración:
+
+**Mac:**
+```bash
+open config/ejemplo_cliente.json
+```
+
+**Windows:**
+```powershell
+notepad config\ejemplo_cliente.json
+```
+
+Edítalo con tu información:
 
 ```json
 {
@@ -86,13 +106,11 @@ Abre el archivo `config/ejemplo_cliente.json` y edítalo con tu información:
 }
 ```
 
-Guarda el archivo con `Ctrl+S`.
+Guarda con `Ctrl+S`.
 
 ---
 
 ## Paso 7 — Generar tu primer post
-
-En la terminal:
 
 ```bash
 python main.py config/ejemplo_cliente.json --solo-generar
@@ -103,13 +121,13 @@ El agente va a:
 2. Generar un post en tu tono
 3. Guardarlo en la carpeta `posts/`
 
-Si el post te gusta, ya puedes copiarlo y publicarlo manualmente en LinkedIn.
+Si el post te gusta, cópialo y publícalo manualmente en LinkedIn.
 
 ---
 
 ## Paso 8 — Publicación automática (opcional)
 
-Si quieres que el agente publique solo, agrega tus credenciales de LinkedIn en el JSON:
+Si quieres que el agente publique solo, agrega tus credenciales al JSON:
 
 ```json
 "linkedin_email": "tu@email.com",
@@ -128,14 +146,29 @@ Te va a preguntar si confirmas antes de publicar.
 
 ## Errores comunes
 
-**"python: command not found"**  
-→ Python no está en el PATH. Reinstala marcando "Add Python to PATH".
+**"python: command not found"**
+```bash
+brew install python
+```
 
-**"anthropic: module not found"**  
-→ Corre `pip install anthropic` en la terminal.
+**"anthropic: module not found"**
+```bash
+pip install anthropic
+```
 
 **"AuthenticationError"**  
-→ Tu API key está mal o no tiene créditos. Verifica en console.anthropic.com.
+→ Tu API key está mal o no tiene créditos. Verifica en [console.anthropic.com](https://console.anthropic.com).
+
+**"git: command not found"**
+
+Mac:
+```bash
+xcode-select --install
+```
+Windows:
+```powershell
+winget install Git.Git
+```
 
 ---
 
