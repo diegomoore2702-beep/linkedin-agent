@@ -1,19 +1,25 @@
-Wealthsimple y Questrade van a ofrecer acceso pre-IPO a sus usuarios.
+El petróleo cae mientras las bolsas americanas baten récords.
 
-Y la mayoría lo ve como una noticia de democratización financiera. Yo lo veo diferente.
+Eso no es una contradicción. Es exactamente cómo funciona la valoración en tiempo real.
 
-El acceso pre-IPO no es un premio. Es un riesgo que antes solo tomaban los que sabían exactamente lo que estaban comprando — y aun así se equivocaban seguido.
+Cuando se filtró el posible acuerdo entre EEUU e Irán, pasaron tres cosas a la vez:
 
-El problema no es quién tiene acceso. El problema es que la mayoría de los inversores retail no saben valorar una empresa que todavía no cotiza en bolsa.
+— El dólar se debilitó
+— El crudo bajó por expectativas de más oferta
+— Las bolsas subieron porque los inversores leyeron "menos tensión geopolítica = menos riesgo"
 
-No hay precio de mercado. No hay comparables obvios. El único número que ves es el que te da la empresa que te quiere vender la participación.
+Tres activos, tres reacciones distintas, mismo evento.
 
-¿Eso suena a democratización o a asimetría de información disfrazada de oportunidad?
+Esto es lo que muchos analistas junior no entienden todavía: el mercado no reacciona a los hechos, reacciona a las expectativas sobre los hechos.
 
-Cuando una empresa está en etapa pre-IPO, la valoración depende casi completamente de métricas proyectadas, narrativa del fundador y condiciones del mercado futuro — tres cosas que nadie controla.
+Y aquí es donde la IA empieza a tener una ventaja real en finanzas corporativas.
 
-Eso no significa que sea mala inversión. Significa que el retail necesita entender lo que está valorando antes de poner un peso.
+Los modelos de valoración tradicionales ajustan el riesgo cada trimestre, como mucho. Los sistemas con IA procesan señales geopolíticas, movimientos de divisas y correlaciones entre activos en tiempo real.
 
-El acceso sin educación financiera no democratiza nada. Solo mueve el riesgo de lugar.
+Una empresa que depende de materias primas importadas hoy tiene una foto de su exposición al riesgo completamente diferente a la de hace 48 horas.
 
-¿Crees que los inversores retail están listos para evaluar una empresa pre-IPO, o es demasiado pronto?
+El CFO que trabaje solo con Excel para eso ya va tarde.
+
+No digo que la IA reemplace el criterio financiero. Digo que sin ella, el criterio financiero opera con información incompleta.
+
+¿Tu empresa ya está ajustando sus modelos de valoración con inputs en tiempo real, o seguís trabajando con datos del último cierre trimestral?

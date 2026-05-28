@@ -10,6 +10,7 @@ __pycache__/
 config/foto.jpg
 config/*.jpg
 config/*.png
+config/linkedin_session.json
 posts/
 memory/clientes/
 logs/

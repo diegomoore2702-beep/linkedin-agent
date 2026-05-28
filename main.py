@@ -46,7 +46,7 @@ def correr_agente(config_path: str, solo_generar: bool = False):
     if config.get("linkedin_email") and config.get("linkedin_password"):
         confirmar = input("\n¿Publicar en LinkedIn ahora? (s/n): ")
         if confirmar.lower() == "s":
-            publicar_en_linkedin(config["linkedin_email"], config["linkedin_password"], post)
+            publicar_en_linkedin(config["linkedin_email"], config["linkedin_password"], post, imagen_path)
     else:
         print("Sin credenciales de LinkedIn — post guardado para revisión manual.")
 

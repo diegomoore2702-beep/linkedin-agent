@@ -19,18 +19,27 @@ def importar_posts(config_path: str):
         return
 
     print(f"Conectando a LinkedIn como {config['nombre']}...")
+    print("\nSe va a abrir el navegador. Si LinkedIn pide verificación, complétala manualmente.")
+    print("Cuando estés en el feed de LinkedIn, presiona Enter aquí para continuar...\n")
     posts = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=False, slow_mo=500)
         page = browser.new_page()
 
         try:
             page.goto("https://www.linkedin.com/login")
-            page.fill("#username", config["linkedin_email"])
-            page.fill("#password", config["linkedin_password"])
-            page.click('[type="submit"]')
-            page.wait_for_url("**/feed**", timeout=15000)
+            time.sleep(2)
+
+            try:
+                page.fill("#username", config["linkedin_email"], timeout=10000)
+                page.fill("#password", config["linkedin_password"])
+                page.click('[type="submit"]')
+                page.wait_for_url("**/feed**", timeout=30000)
+            except Exception:
+                pass
+
+            input("Presiona Enter cuando estés en el feed de LinkedIn...")
             print("Login exitoso.")
 
             # Ir al perfil

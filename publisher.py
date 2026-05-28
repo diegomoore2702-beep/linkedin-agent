@@ -1,35 +1,87 @@
 import time
+import json
+import urllib.parse
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-def publicar_en_linkedin(email: str, password: str, texto: str) -> bool:
+COOKIES_PATH = Path("config/linkedin_session.json")
+
+def guardar_sesion(context):
+    cookies = context.cookies()
+    COOKIES_PATH.write_text(json.dumps(cookies))
+    print("Sesión guardada. No necesitarás loguearte por ~30 días.")
+
+def cargar_sesion(context) -> bool:
+    if COOKIES_PATH.exists():
+        cookies = json.loads(COOKIES_PATH.read_text())
+        context.add_cookies(cookies)
+        return True
+    return False
+
+def publicar_en_linkedin(email: str, password: str, texto: str, imagen_path: str = None) -> bool:
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+        browser = p.chromium.launch(headless=False, slow_mo=300)
+        context = browser.new_context()
+        page = context.new_page()
 
         try:
-            # Login
-            page.goto("https://www.linkedin.com/login")
-            page.fill("#username", email)
-            page.fill("#password", password)
-            page.click('[type="submit"]')
-            page.wait_for_url("**/feed**", timeout=15000)
+            sesion_cargada = cargar_sesion(context)
 
-            # Abrir modal de post
-            page.click('button:has-text("Comenzar una publicación"), button:has-text("Start a post")')
-            time.sleep(2)
+            if sesion_cargada:
+                # Verificar que la sesión sigue activa
+                page.goto("https://www.linkedin.com/feed/")
+                time.sleep(3)
+                if "feed" not in page.url:
+                    sesion_cargada = False
+                    print("Sesión expirada. Logueándote de nuevo...")
 
-            # Escribir el post
-            editor = page.locator('.ql-editor, [role="textbox"]').first
-            editor.click()
-            editor.type(texto, delay=20)
-            time.sleep(1)
+            if not sesion_cargada:
+                page.goto("https://www.linkedin.com/login")
+                time.sleep(2)
+                try:
+                    page.fill("#username", email, timeout=10000)
+                    page.fill("#password", password)
+                    page.click('[type="submit"]')
+                    page.wait_for_url("**/feed**", timeout=30000)
+                except Exception:
+                    pass
+                input("\nSi LinkedIn pidió verificación, complétala.\nPresiona Enter cuando estés en el feed...")
+                guardar_sesion(context)
 
-            # Publicar
-            page.click('button:has-text("Publicar"), button:has-text("Post")')
-            time.sleep(3)
+            # Abrir modal con texto pre-cargado
+            texto_encoded = urllib.parse.quote(texto)
+            page.goto(f"https://www.linkedin.com/feed/?shareActive=true&text={texto_encoded}")
+            time.sleep(4)
 
-            print("Post publicado en LinkedIn.")
+            # Adjuntar imagen si existe
+            if imagen_path and Path(imagen_path).exists():
+                try:
+                    # Buscar botón de imagen
+                    for selector in [
+                        'button[aria-label*="imagen"]',
+                        'button[aria-label*="photo"]',
+                        'button[aria-label*="foto"]',
+                        'input[type="file"]',
+                        'label[for*="media"]',
+                    ]:
+                        try:
+                            if selector == 'input[type="file"]':
+                                page.set_input_files(selector, imagen_path, timeout=5000)
+                            else:
+                                page.click(selector, timeout=5000)
+                            time.sleep(2)
+                            break
+                        except Exception:
+                            continue
+                except Exception:
+                    print("No se pudo adjuntar la imagen automáticamente.")
+
+            input("\nPost listo en LinkedIn. Revísalo y publícalo desde el navegador.\nPresiona Enter cuando hayas publicado...")
+
+            # Actualizar sesión
+            guardar_sesion(context)
             browser.close()
+            print("Publicado en LinkedIn.")
             return True
 
         except Exception as e:
