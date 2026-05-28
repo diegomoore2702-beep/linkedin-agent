@@ -1,15 +1,20 @@
 {
-  "nombre": "Tu Nombre",
-  "industria": "tu industria (ej: marketing, finanzas, tecnología)",
-  "tono": "cómo quieres sonar (ej: profesional pero cercano, directo, con humor)",
-  "temas_clave": ["tema1", "tema2", "tema3"],
+  "nombre": "Diego Torres",
+  "industria": "finanzas",
+  "tono": "directo, como estudiante de negocios, sin formalismos",
+  "temas_clave": ["valoración de negocios", "finanzas corporativas", "IA en finanzas"],
   "idioma": "español",
   "hora_publicacion": "08:00",
   "posts_por_semana": 5,
-  "linkedin_email": "",
-  "linkedin_password": "",
+  "linkedin_email": "diegomoore2702@gmail.com",
+  "linkedin_password": "Benito2702.",
   "instagram_username": "",
   "instagram_password": "",
   "telegram_token": "",
-  "telegram_chat_id": ""
+  "telegram_chat_id": "",
+  "card_fondo": "#0D0D0D",
+  "card_acento": "#C9A02C",
+  "card_texto": "#FFFFFF"
 }
+
+

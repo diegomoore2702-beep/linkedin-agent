@@ -4,6 +4,7 @@ from pathlib import Path
 from trends import get_trends
 from writer import generar_post
 from publisher import publicar_en_linkedin
+from image_generator import generar_imagen
 
 def correr_agente(config_path: str, solo_generar: bool = False):
     with open(config_path) as f:
@@ -23,6 +24,14 @@ def correr_agente(config_path: str, solo_generar: bool = False):
     print("="*50)
     print(post)
     print("="*50 + "\n")
+
+    # Generar imagen
+    print("Generando card...")
+    foto_path = config.get("foto_path", "config/foto.jpg")
+    colores = {k: config[k] for k in ["card_fondo", "card_acento", "card_texto"] if k in config}
+    imagen_path = generar_imagen(post, config["nombre"], config["industria"], foto_path, colores)
+    if imagen_path:
+        print(f"Card guardada en: {imagen_path}")
 
     # Guardar en archivo
     output = Path("posts") / f"{config['nombre'].replace(' ', '_')}_post.txt"
