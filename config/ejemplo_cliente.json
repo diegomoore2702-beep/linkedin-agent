@@ -8,6 +8,8 @@
   "posts_por_semana": 5,
   "linkedin_email": "",
   "linkedin_password": "",
+  "instagram_username": "",
+  "instagram_password": "",
   "telegram_token": "",
   "telegram_chat_id": ""
 }

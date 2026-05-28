@@ -4,3 +4,4 @@ feedparser
 apscheduler
 python-dotenv
 playwright
+instagrapi
