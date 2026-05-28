@@ -125,22 +125,36 @@ Si el post te gusta, cópialo y publícalo manualmente en LinkedIn.
 
 ---
 
-## Paso 8 — Publicación automática (opcional)
+## Paso 8 — Publicación automática (mientras duermes)
 
-Si quieres que el agente publique solo, agrega tus credenciales al JSON:
+Agrega tus credenciales de LinkedIn en el JSON:
 
 ```json
 "linkedin_email": "tu@email.com",
 "linkedin_password": "tu_contraseña"
 ```
 
-Luego corre sin `--solo-generar`:
+La hora de publicación ya está en el JSON — cámbiala si quieres:
 
-```bash
-python main.py config/ejemplo_cliente.json
+```json
+"hora_publicacion": "08:00"
 ```
 
-Te va a preguntar si confirmas antes de publicar.
+Luego corre el scheduler:
+
+```bash
+python scheduler.py config/ejemplo_cliente.json
+```
+
+Verás algo así:
+```
+2026-05-28 — Scheduler activo — publicará cada día a las 08:00
+2026-05-28 — Deja esta ventana abierta. Ctrl+C para detener.
+```
+
+**Deja la ventana de la terminal abierta y el computador encendido.** El agente publicará solo a la hora configurada todos los días.
+
+Para detenerlo: `Ctrl + C`
 
 ---
 
