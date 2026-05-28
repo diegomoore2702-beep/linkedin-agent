@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Mac
+.DS_Store
+
+# Archivos personales — NO subir al repo
+config/foto.jpg
+config/*.jpg
+config/*.png
+posts/
+memory/clientes/
+logs/
