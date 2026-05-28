@@ -53,30 +53,14 @@ def publicar_en_linkedin(email: str, password: str, texto: str, imagen_path: str
             page.goto(f"https://www.linkedin.com/feed/?shareActive=true&text={texto_encoded}")
             time.sleep(4)
 
-            # Adjuntar imagen si existe
+            # Abrir imagen en Finder para arrastrar al modal
             if imagen_path and Path(imagen_path).exists():
-                try:
-                    # Buscar botón de imagen
-                    for selector in [
-                        'button[aria-label*="imagen"]',
-                        'button[aria-label*="photo"]',
-                        'button[aria-label*="foto"]',
-                        'input[type="file"]',
-                        'label[for*="media"]',
-                    ]:
-                        try:
-                            if selector == 'input[type="file"]':
-                                page.set_input_files(selector, imagen_path, timeout=5000)
-                            else:
-                                page.click(selector, timeout=5000)
-                            time.sleep(2)
-                            break
-                        except Exception:
-                            continue
-                except Exception:
-                    print("No se pudo adjuntar la imagen automáticamente.")
+                import subprocess
+                subprocess.run(["open", "-R", imagen_path])
+                print(f"\nImagen abierta en Finder: {imagen_path}")
+                print("Arrástrala al modal de LinkedIn para adjuntarla.")
 
-            input("\nPost listo en LinkedIn. Revísalo y publícalo desde el navegador.\nPresiona Enter cuando hayas publicado...")
+            input("\nPost listo en LinkedIn. Adjunta la imagen, revisa y publica.\nPresiona Enter cuando hayas publicado...")
 
             # Actualizar sesión
             guardar_sesion(context)
