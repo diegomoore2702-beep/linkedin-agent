@@ -1,0 +1,11 @@
+{
+  "nombre": "Juan Pérez",
+  "industria": "tecnología",
+  "tono": "profesional pero cercano, usa datos concretos, sin frases de relleno",
+  "temas_clave": ["IA", "startups", "liderazgo", "productividad"],
+  "idioma": "español",
+  "hora_publicacion": "08:00",
+  "posts_por_semana": 5,
+  "linkedin_email": "",
+  "linkedin_password": ""
+}

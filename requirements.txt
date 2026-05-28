@@ -1,0 +1,6 @@
+anthropic
+requests
+feedparser
+apscheduler
+python-dotenv
+playwright
