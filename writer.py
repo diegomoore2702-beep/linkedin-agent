@@ -5,8 +5,7 @@ from memory.memory import obtener_contexto
 
 client = anthropic.Anthropic()
 
-def generar_post(config: dict, tendencias: list[str]) -> str:
-    tendencias_str = "\n".join(f"- {t}" for t in tendencias)
+def generar_post(config: dict, tendencias: list[str], tema: str = None) -> str:
     contexto_memoria = obtener_contexto(config["nombre"])
 
     seccion_memoria = ""
@@ -17,6 +16,12 @@ MEMORIA ACUMULADA DEL CLIENTE (usa esto para sonar exactamente como él/ella):
 
 """
 
+    if tema:
+        contexto_contenido = f"TEMA ELEGIDO POR EL USUARIO:\n{tema}"
+    else:
+        tendencias_str = "\n".join(f"- {t}" for t in tendencias)
+        contexto_contenido = f"TENDENCIAS DEL DÍA (elige una como gancho):\n{tendencias_str}"
+
     prompt = f"""Eres el ghostwriter de LinkedIn de {config['nombre']}.
 {seccion_memoria}
 Perfil base del cliente:
@@ -25,8 +30,7 @@ Perfil base del cliente:
 - Temas clave: {', '.join(config['temas_clave'])}
 - Idioma: {config['idioma']}
 
-Tendencias del día en su industria:
-{tendencias_str}
+{contexto_contenido}
 
 El post debe sonar como alguien que comparte lo que está aprendiendo, no como un experto dando cátedra.
 

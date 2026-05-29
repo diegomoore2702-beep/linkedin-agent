@@ -264,14 +264,31 @@ def _dibujar_texto_izquierda(c, texto: str, x: int, y: int, fuente: str, size: i
         c.drawString(x, y_actual, linea)
         y_actual -= (size + 12)
 
-def generar_carrusel(post: str, config: dict, foto_path: str = None) -> str | None:
+ESTILOS = {
+    "clasico":      {"fondo": "#0D0D0D", "acento": "#C9A02C", "texto": "#FFFFFF", "secundario": "#888888"},
+    "minimalista":  {"fondo": "#FFFFFF", "acento": "#0D0D0D", "texto": "#0D0D0D", "secundario": "#555555"},
+    "claro":        {"fondo": "#F5F5F5", "acento": "#2563EB", "texto": "#111111", "secundario": "#666666"},
+    "foto-grande":  {"fondo": "#1a1a2e", "acento": "#E94560", "texto": "#FFFFFF", "secundario": "#AAAAAA"},
+}
+
+def generar_carrusel(post: str, config: dict, foto_path: str = None, estilo: str = "clasico") -> str | None:
     try:
+        estilo_data = ESTILOS.get(estilo, ESTILOS["clasico"])
         colores_config = {
-            "card_fondo": config.get("card_fondo", "#0D0D0D"),
-            "card_acento": config.get("card_acento", "#C9A02C"),
+            "card_fondo":  config.get("card_fondo", estilo_data["fondo"]),
+            "card_acento": config.get("card_acento", estilo_data["acento"]),
+            "card_texto":  config.get("card_texto",  estilo_data["texto"]),
         }
 
-        print("Generando contenido del carrusel...")
+        # Si el estilo no es clasico, usar los colores del estilo elegido
+        if estilo != "clasico":
+            colores_config = {
+                "card_fondo":  estilo_data["fondo"],
+                "card_acento": estilo_data["acento"],
+                "card_texto":  estilo_data["texto"],
+            }
+
+        print(f"Generando contenido del carrusel (estilo: {estilo})...")
         slides = generar_contenido_carrusel(post, config)
 
         if not slides:
@@ -281,7 +298,7 @@ def generar_carrusel(post: str, config: dict, foto_path: str = None) -> str | No
         carpeta = Path("posts/carruseles")
         carpeta.mkdir(parents=True, exist_ok=True)
         fecha = datetime.now().strftime("%Y-%m-%d")
-        ruta = str(carpeta / f"{config['nombre'].replace(' ', '_')}_{fecha}.pdf")
+        ruta = str(carpeta / f"{config['nombre'].replace(' ', '_')}_{fecha}_{estilo}.pdf")
 
         c = canvas.Canvas(ruta, pagesize=(W, H))
 

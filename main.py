@@ -6,18 +6,22 @@ from writer import generar_post
 from publisher import publicar_en_linkedin
 from carousel_generator import generar_carrusel
 
-def correr_agente(config_path: str, solo_generar: bool = False, foto_override: str = None):
+def correr_agente(config_path: str, solo_generar: bool = False, foto_override: str = None, tema: str = None, estilo: str = None):
     with open(config_path) as f:
         config = json.load(f)
 
     print(f"Agente iniciado para: {config['nombre']}")
 
-    print("Buscando tendencias...")
-    tendencias = get_trends(config["industria"])
-    print(f"Tendencias encontradas: {len(tendencias)}")
+    tendencias = []
+    if not tema:
+        print("Buscando tendencias...")
+        tendencias = get_trends(config["industria"])
+        print(f"Tendencias encontradas: {len(tendencias)}")
+    else:
+        print(f"Tema elegido: {tema}")
 
     print("Generando post...")
-    post = generar_post(config, tendencias)
+    post = generar_post(config, tendencias, tema)
 
     print("\n" + "="*50)
     print("POST GENERADO:")
@@ -28,7 +32,8 @@ def correr_agente(config_path: str, solo_generar: bool = False, foto_override: s
     # Generar carrusel
     print("Generando carrusel...")
     foto_path = foto_override or config.get("foto_path", "config/foto.jpg")
-    imagen_path = generar_carrusel(post, config, foto_path)
+    estilo_carrusel = estilo or config.get("estilo_carrusel", "clasico")
+    imagen_path = generar_carrusel(post, config, foto_path, estilo_carrusel)
     if imagen_path:
         print(f"Carrusel guardado en: {imagen_path}")
 
@@ -53,11 +58,25 @@ if __name__ == "__main__":
     config_path = sys.argv[1] if len(sys.argv) > 1 else "config/ejemplo_cliente.json"
     solo_generar = "--solo-generar" in sys.argv
 
-    # --foto /ruta/foto.jpg para usar una foto diferente
+    # --foto /ruta/foto.jpg
     foto_override = None
     if "--foto" in sys.argv:
         idx = sys.argv.index("--foto")
         if idx + 1 < len(sys.argv):
             foto_override = sys.argv[idx + 1]
 
-    correr_agente(config_path, solo_generar, foto_override)
+    # --tema "de qué quieres hablar hoy"
+    tema = None
+    if "--tema" in sys.argv:
+        idx = sys.argv.index("--tema")
+        if idx + 1 < len(sys.argv):
+            tema = sys.argv[idx + 1]
+
+    # --estilo clasico | minimalista | claro | foto-grande
+    estilo = None
+    if "--estilo" in sys.argv:
+        idx = sys.argv.index("--estilo")
+        if idx + 1 < len(sys.argv):
+            estilo = sys.argv[idx + 1]
+
+    correr_agente(config_path, solo_generar, foto_override, tema, estilo)
