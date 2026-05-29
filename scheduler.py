@@ -43,16 +43,16 @@ def publicar_automatico(config_path: str):
     except Exception as e:
         logging.warning(f"Engagement skipped: {e}")
 
-    # 2. Generar post (crítico)
+    # 2. Generar post con score de calidad (crítico)
     try:
         from trends import get_trends
-        from writer import generar_post
+        from post_scorer import generar_post_con_score
         tendencias = get_trends(config.get("industria", "negocios"))
-        post = generar_post(config, tendencias, tema=None)
+        post = generar_post_con_score(config, tendencias, tema=None, intentos=3)
         logging.info(f"Post generado ({len(post)} chars)")
     except Exception as e:
         logging.error(f"Error generando post: {e}")
-        return  # sin post no hay nada que hacer
+        return
 
     # 3. Guardar post en disco
     try:

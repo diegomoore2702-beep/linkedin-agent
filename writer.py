@@ -1,15 +1,50 @@
 import anthropic
 import sys
+import json
+from pathlib import Path
 sys.path.insert(0, ".")
 
 client = anthropic.Anthropic()
 
-def _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria, variante="") -> str:
+FORMATOS = {
+    "opinion":  "Empieza con 'Opinión impopular:' o 'Algo que nadie dice sobre [tema]:' — da una perspectiva contraintuitiva.",
+    "historia": "Empieza con una micro-historia personal de 2 líneas que lleve al insight principal.",
+    "lista":    "Estructura como una lista corta (3-4 puntos) con un insight inesperado en el último.",
+    "datos":    "Empieza con un número o estadística sorprendente, luego explica qué significa de verdad.",
+    "pregunta": "Empieza con una pregunta directa y desafiante que haga que el lector quiera responder.",
+}
+
+def _get_siguiente_formato(nombre: str) -> str:
+    historial_path = Path(__file__).parent / "memory" / "clientes" / f"{nombre.replace(' ', '_').lower()}_formatos.json"
+    formatos_lista = list(FORMATOS.keys())
+
+    try:
+        if historial_path.exists():
+            with open(historial_path) as f:
+                historial = json.load(f)
+            ultimo = historial.get("ultimo_formato", "")
+            idx = formatos_lista.index(ultimo) if ultimo in formatos_lista else -1
+            siguiente = formatos_lista[(idx + 1) % len(formatos_lista)]
+        else:
+            siguiente = formatos_lista[0]
+
+        historial_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(historial_path, "w") as f:
+            json.dump({"ultimo_formato": siguiente}, f)
+        return siguiente
+    except Exception:
+        return "opinion"
+
+def _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria, variante="", formato="") -> str:
     instruccion_variante = ""
     if variante == "A":
         instruccion_variante = "\nVARIANTE A: Empieza con un dato o hecho concreto que sorprenda."
     elif variante == "B":
         instruccion_variante = "\nVARIANTE B: Empieza con una situación personal o pregunta directa."
+
+    instruccion_formato = ""
+    if formato and formato in FORMATOS:
+        instruccion_formato = f"\nFORMATO DEL POST: {FORMATOS[formato]}"
 
     return f"""Eres el ghostwriter de LinkedIn de {nombre}.
 {seccion_memoria}
@@ -19,7 +54,7 @@ Perfil del cliente:
 - Temas clave: {temas_str}
 - Idioma: {idioma}
 
-{contexto_contenido}{instruccion_variante}
+{contexto_contenido}{instruccion_variante}{instruccion_formato}
 
 El post debe sonar como alguien que comparte lo que está aprendiendo, no como un experto.
 
@@ -91,13 +126,17 @@ def generar_post(config: dict, tendencias: list, tema: str = None) -> str:
 
     tiene_historial = len(memoria.get("posts_publicados", [])) >= 3
 
+    # Determinar formato del post (rotación automática)
+    formato = _get_siguiente_formato(nombre)
+    print(f"Formato del post: {formato}")
+
     if tiene_historial:
         # A/B testing: generar 2 versiones y elegir la mejor
         try:
             print("Generando versiones A/B...")
             versiones = []
             for variante in ["A", "B"]:
-                prompt = _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria, variante)
+                prompt = _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria, variante, formato)
                 msg = client.messages.create(
                     model="claude-sonnet-4-6",
                     max_tokens=1024,
@@ -114,7 +153,7 @@ def generar_post(config: dict, tendencias: list, tema: str = None) -> str:
             print(f"A/B test falló, generando versión única: {e}")
 
     # Sin historial o si A/B falló: versión única
-    prompt = _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria)
+    prompt = _construir_prompt(nombre, industria, tono, temas_str, idioma, contexto_contenido, seccion_memoria, formato=formato)
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=1024,
