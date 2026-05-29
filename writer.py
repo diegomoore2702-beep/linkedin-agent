@@ -6,7 +6,13 @@ from memory.memory import obtener_contexto
 client = anthropic.Anthropic()
 
 def generar_post(config: dict, tendencias: list[str], tema: str = None) -> str:
-    contexto_memoria = obtener_contexto(config["nombre"])
+    nombre = config.get("nombre", "el usuario")
+    industria = config.get("industria", "negocios")
+    tono = config.get("tono", "casual y directo")
+    temas_clave = config.get("temas_clave", [])
+    idioma = config.get("idioma", "español")
+
+    contexto_memoria = obtener_contexto(nombre)
 
     seccion_memoria = ""
     if contexto_memoria:
@@ -22,13 +28,15 @@ MEMORIA ACUMULADA DEL CLIENTE (usa esto para sonar exactamente como él/ella):
         tendencias_str = "\n".join(f"- {t}" for t in tendencias)
         contexto_contenido = f"TENDENCIAS DEL DÍA (elige una como gancho):\n{tendencias_str}"
 
-    prompt = f"""Eres el ghostwriter de LinkedIn de {config['nombre']}.
+    temas_str = ", ".join(temas_clave) if temas_clave else industria
+
+    prompt = f"""Eres el ghostwriter de LinkedIn de {nombre}.
 {seccion_memoria}
 Perfil base del cliente:
-- Industria: {config['industria']}
-- Tono: {config['tono']}
-- Temas clave: {', '.join(config['temas_clave'])}
-- Idioma: {config['idioma']}
+- Industria: {industria}
+- Tono: {tono}
+- Temas clave: {temas_str}
+- Idioma: {idioma}
 
 {contexto_contenido}
 
@@ -42,7 +50,7 @@ Reglas estrictas:
 - NADA de: "En el mundo actual", "Es fundamental", "cabe destacar", "sin duda", "hoy en día"
 - NADA de lenguaje de consultor o ejecutivo
 - Sin hashtags
-- Si hay memoria acumulada, copia exactamente el ritmo y frases de {config['nombre']}
+- Si hay memoria acumulada, copia exactamente el ritmo y frases de {nombre}
 
 Ejemplo del tono correcto:
 "Vi que [empresa X] está haciendo algo raro con sus números.

@@ -6,12 +6,9 @@ import anthropic
 import json
 from pathlib import Path
 from datetime import datetime
-from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 
 client = anthropic.Anthropic()
 
@@ -34,7 +31,7 @@ def generar_contenido_carrusel(post: str, config: dict) -> list[dict]:
 POST:
 {post}
 
-PERFIL: {config['nombre']}, estudiante de {config['industria']}, tono: {config['tono']}
+PERFIL: {config.get('nombre','')}, estudiante de {config.get('industria','negocios')}, tono: {config.get('tono','casual')}
 
 Responde en JSON con esta estructura exacta:
 {{
@@ -124,7 +121,7 @@ def dibujar_slide_portada(c, slide: dict, config: dict, colores_config: dict):
     # Nombre
     c.setFillColor(acento)
     c.setFont("Helvetica-Bold", 22)
-    c.drawCentredString(W // 2, 50, config["nombre"].upper())
+    c.drawCentredString(W // 2, 50, config.get("nombre", "").upper())
 
 def dibujar_slide_contenido(c, slide: dict, colores_config: dict):
     fondo = colors.HexColor(colores_config.get("card_fondo", "#0D0D0D"))
@@ -183,8 +180,8 @@ def dibujar_slide_cierre(c, slide: dict, config: dict, foto_path: str, colores_c
             size = 200
             foto = foto.resize((size, size))
 
-            mask = PILImage.new("L", (size, size), 0)
             from PIL import ImageDraw as PILDraw
+            mask = PILImage.new("L", (size, size), 0)
             draw = PILDraw.Draw(mask)
             draw.ellipse([(0, 0), (size, size)], fill=255)
 
@@ -210,7 +207,7 @@ def dibujar_slide_cierre(c, slide: dict, config: dict, foto_path: str, colores_c
     # Nombre
     c.setFillColor(acento)
     c.setFont("Helvetica-Bold", 28)
-    c.drawCentredString(W // 2, H // 2 - 20, config["nombre"].upper())
+    c.drawCentredString(W // 2, H // 2 - 20, config.get("nombre", "").upper())
 
     c.setFillColor(GRIS)
     c.setFont("Helvetica", 22)

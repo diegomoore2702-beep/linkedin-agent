@@ -9,15 +9,25 @@ sys.path.insert(0, ".")
 from playwright.sync_api import sync_playwright
 from memory.memory import cargar_memoria, guardar_memoria
 
+def _parsear_numero(texto: str) -> int:
+    try:
+        limpio = texto.strip().replace(",", "").replace(".", "").split()[0]
+        return int(limpio) if limpio.isdigit() else 0
+    except Exception:
+        return 0
+
 def actualizar_engagement(config_path: str):
     with open(config_path) as f:
         config = json.load(f)
 
-    if not config.get("linkedin_email") or not config.get("linkedin_password"):
+    email = config.get("linkedin_email") or __import__("os").getenv("LINKEDIN_EMAIL")
+    password = config.get("linkedin_password") or __import__("os").getenv("LINKEDIN_PASSWORD")
+
+    if not email or not password:
         print("Se necesitan credenciales de LinkedIn.")
         return
 
-    memoria = cargar_memoria(config["nombre"])
+    memoria = cargar_memoria(config.get("nombre", "usuario"))
     posts_sin_engagement = [
         p for p in memoria["posts_publicados"]
         if p["fecha"] != "importado" and p["engagement"]["likes"] == 0
@@ -35,15 +45,20 @@ def actualizar_engagement(config_path: str):
 
         try:
             page.goto("https://www.linkedin.com/login")
-            page.fill("#username", config["linkedin_email"])
-            page.fill("#password", config["linkedin_password"])
-            page.click('[type="submit"]')
-            page.wait_for_url("**/feed**", timeout=15000)
+            time.sleep(2)
+            try:
+                page.fill("#username", email, timeout=10000)
+                page.fill("#password", password)
+                page.click('[type="submit"]')
+                page.wait_for_url("**/feed**", timeout=30000)
+            except Exception as e:
+                print(f"Error en login: {e}")
+                browser.close()
+                return
 
             page.goto("https://www.linkedin.com/in/me/recent-activity/shares/")
             time.sleep(3)
 
-            # Extraer engagement de cada post visible
             posts_en_pagina = page.query_selector_all(".feed-shared-update-v2")
 
             for post_el in posts_en_pagina[:10]:
@@ -53,32 +68,17 @@ def actualizar_engagement(config_path: str):
                         continue
                     texto = texto_el.inner_text().strip()[:100]
 
-                    # Buscar el post correspondiente en memoria
                     for post_memoria in posts_sin_engagement:
                         if texto in post_memoria["post"] or post_memoria["post"][:100] in texto:
-                            # Extraer likes
                             likes_el = post_el.query_selector("[aria-label*='reactions'], .social-details-social-counts__reactions-count")
                             comentarios_el = post_el.query_selector("[aria-label*='comments'], .social-details-social-counts__comments")
 
-                            likes = 0
-                            comentarios = 0
+                            likes = _parsear_numero(likes_el.inner_text()) if likes_el else 0
+                            comentarios = _parsear_numero(comentarios_el.inner_text()) if comentarios_el else 0
 
-                            if likes_el:
-                                likes_text = likes_el.inner_text().strip().replace(",", "")
-                                likes = int(likes_text) if likes_text.isdigit() else 0
+                            post_memoria["engagement"] = {"likes": likes, "comentarios": comentarios, "reposts": 0}
 
-                            if comentarios_el:
-                                com_text = comentarios_el.inner_text().strip().split()[0].replace(",", "")
-                                comentarios = int(com_text) if com_text.isdigit() else 0
-
-                            post_memoria["engagement"] = {
-                                "likes": likes,
-                                "comentarios": comentarios,
-                                "reposts": 0
-                            }
-
-                            if likes > 0 and post_memoria["post"] not in memoria["temas_exitosos"]:
-                                # Guardar tema como exitoso si tuvo likes
+                            if likes > 0:
                                 resumen = post_memoria["post"][:80] + "..."
                                 if resumen not in memoria["temas_exitosos"]:
                                     memoria["temas_exitosos"].append(resumen)
@@ -93,10 +93,12 @@ def actualizar_engagement(config_path: str):
 
         except Exception as e:
             print(f"Error: {e}")
-            browser.close()
+            try:
+                browser.close()
+            except Exception:
+                pass
             return
 
-    # Actualizar en memoria
     for post_actualizado in posts_sin_engagement:
         for i, post in enumerate(memoria["posts_publicados"]):
             if post["post"] == post_actualizado["post"]:
