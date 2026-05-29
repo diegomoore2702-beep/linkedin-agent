@@ -11,6 +11,7 @@ from publisher import publicar_en_linkedin
 from memory.memory import registrar_post
 from carousel_generator import generar_carrusel
 from engagement_tracker import actualizar_engagement
+from first_comment import publicar_primer_comentario
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s — %(message)s")
 
@@ -87,7 +88,20 @@ def publicar_automatico(config_path: str):
             except Exception as e:
                 logging.warning(f"Error Instagram: {e}")
 
-        # 7. Guardar en memoria
+        # 7. Primer comentario automático
+        if config.get("linkedin_email") and config.get("linkedin_password"):
+            try:
+                publicar_primer_comentario(
+                    config["linkedin_email"],
+                    config["linkedin_password"],
+                    post,
+                    config["nombre"]
+                )
+                logging.info("Primer comentario publicado.")
+            except Exception as e:
+                logging.warning(f"No se pudo publicar el primer comentario: {e}")
+
+        # 8. Guardar en memoria
         registrar_post(config["nombre"], post)
         logging.info("Post guardado en memoria.")
 
