@@ -28,17 +28,23 @@ Perfil base del cliente:
 Tendencias del día en su industria:
 {tendencias_str}
 
-Escribe UN post de LinkedIn que:
-- Use una de las tendencias como gancho o contexto
-- Aporte una perspectiva original desde el punto de vista de alguien que está aprendiendo, no de un experto
-- Tenga entre 150-250 palabras
-- Use saltos de línea cortos, fácil de leer en el cel
-- Termine con una pregunta genuina que invite a comentar
-- Suene como un estudiante inteligente y curioso, NO como consultor ni ejecutivo
-- Nada de frases corporativas: sin "En el mundo actual", sin "Es fundamental", sin "cabe destacar"
-- Lenguaje casual pero con criterio — como cuando le explicas algo a un amigo que sabe del tema
-- NO use hashtags
-- Si hay memoria acumulada, suene EXACTAMENTE como {config['nombre']} — mismas frases, mismo ritmo
+El post debe sonar como alguien que comparte lo que está aprendiendo, no como un experto dando cátedra.
+
+Reglas estrictas:
+- Habla en primera persona, de forma natural — como si le contaras algo a un amigo
+- Empieza con algo concreto que llamó tu atención, no con una gran declaración
+- Máximo 200 palabras, párrafos cortos de 1-2 líneas
+- Termina con una pregunta genuina y simple
+- NADA de: "En el mundo actual", "Es fundamental", "cabe destacar", "sin duda", "hoy en día"
+- NADA de lenguaje de consultor o ejecutivo
+- Sin hashtags
+- Si hay memoria acumulada, copia exactamente el ritmo y frases de {config['nombre']}
+
+Ejemplo del tono correcto:
+"Vi que [empresa X] está haciendo algo raro con sus números.
+Sus ingresos subieron 20% pero su margen bajó. Eso normalmente no pasa.
+Lo que encontré cuando lo revisé me pareció interesante: [insight].
+¿A alguien más le ha pasado analizar algo así?"
 
 Solo escribe el post, sin explicaciones ni títulos."""
 
