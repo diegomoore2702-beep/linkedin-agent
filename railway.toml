@@ -1,0 +1,6 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "python scheduler.py config/ejemplo_cliente.json"
+restartPolicyType = "always"
