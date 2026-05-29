@@ -6,7 +6,7 @@ from writer import generar_post
 from publisher import publicar_en_linkedin
 from carousel_generator import generar_carrusel
 
-def correr_agente(config_path: str, solo_generar: bool = False):
+def correr_agente(config_path: str, solo_generar: bool = False, foto_override: str = None):
     with open(config_path) as f:
         config = json.load(f)
 
@@ -27,7 +27,7 @@ def correr_agente(config_path: str, solo_generar: bool = False):
 
     # Generar carrusel
     print("Generando carrusel...")
-    foto_path = config.get("foto_path", "config/foto.jpg")
+    foto_path = foto_override or config.get("foto_path", "config/foto.jpg")
     imagen_path = generar_carrusel(post, config, foto_path)
     if imagen_path:
         print(f"Carrusel guardado en: {imagen_path}")
@@ -52,4 +52,12 @@ def correr_agente(config_path: str, solo_generar: bool = False):
 if __name__ == "__main__":
     config_path = sys.argv[1] if len(sys.argv) > 1 else "config/ejemplo_cliente.json"
     solo_generar = "--solo-generar" in sys.argv
-    correr_agente(config_path, solo_generar)
+
+    # --foto /ruta/foto.jpg para usar una foto diferente
+    foto_override = None
+    if "--foto" in sys.argv:
+        idx = sys.argv.index("--foto")
+        if idx + 1 < len(sys.argv):
+            foto_override = sys.argv[idx + 1]
+
+    correr_agente(config_path, solo_generar, foto_override)
